@@ -1,6 +1,10 @@
-streamlit>=1.28.0
-pandas>=2.0.0
-numpy>=1.24.0
-altair>=5.0.0
-pyarrow>=12.0.0
+# Astro Runtime includes the following pre-installed providers packages: https://www.astronomer.io/docs/astro/runtime-image-architecture#provider-packages
+apache-airflow-providers-google>=10.0.0
+google-cloud-secret-manager
+google-cloud-storage
+google-api-python-client
+google-auth
+pandas
+nltk
+
 
