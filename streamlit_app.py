@@ -837,13 +837,41 @@ def main() -> None:
     st.title("Daily Music Trend Dashboard")
     st.caption("YouTube & Reddit data refreshed via automated pipeline.")
 
+    # Debug: Show file paths
+    with st.expander("🔍 Debug Info", expanded=False):
+        st.write("**Data file paths:**")
+        st.write(f"- SUMMARY_PARQUET: {SUMMARY_PARQUET}")
+        st.write(f"- Exists: {SUMMARY_PARQUET.exists()}")
+        st.write(f"- COMMENTS_PARQUET: {COMMENTS_PARQUET}")
+        st.write(f"- Exists: {COMMENTS_PARQUET.exists()}")
+        st.write(f"- REDDIT_SUMMARY_PARQUET: {REDDIT_SUMMARY_PARQUET}")
+        st.write(f"- Exists: {REDDIT_SUMMARY_PARQUET.exists()}")
+        st.write(f"- REDDIT_COMMENTS_PARQUET: {REDDIT_COMMENTS_PARQUET}")
+        st.write(f"- Exists: {REDDIT_COMMENTS_PARQUET.exists()}")
+    
     summary_df = load_summary_data()
     comments_df = load_comments_data()
     reddit_summary_df = load_reddit_summary()
     reddit_comments_df = load_reddit_comments()
 
+    # Debug: Show data status
+    with st.expander("🔍 Debug Info", expanded=False):
+        st.write("**Data loaded:**")
+        st.write(f"- YouTube summary: {len(summary_df)} rows")
+        st.write(f"- YouTube comments: {len(comments_df)} rows")
+        st.write(f"- Reddit summary: {len(reddit_summary_df)} rows")
+        st.write(f"- Reddit comments: {len(reddit_comments_df)} rows")
+
     if summary_df.empty and reddit_summary_df.empty:
-        st.warning("No processed data found. Run the cleaning scripts after syncing raw CSVs.")
+        st.error("❌ No processed data found!")
+        st.info("Expected data files:")
+        st.code(f"""
+- {SUMMARY_PARQUET}
+- {COMMENTS_PARQUET}
+- {REDDIT_SUMMARY_PARQUET}
+- {REDDIT_COMMENTS_PARQUET}
+        """)
+        st.warning("Please run the cleaning scripts after syncing raw CSVs from GCS.")
         return
 
     date_series = []
