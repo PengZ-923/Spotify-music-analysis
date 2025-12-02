@@ -869,6 +869,16 @@ def main() -> None:
         st.write(f"- YouTube comments: {len(comments_df)} rows")
         st.write(f"- Reddit summary: {len(reddit_summary_df)} rows")
         st.write(f"- Reddit comments: {len(reddit_comments_df)} rows")
+        
+        # Show column info
+        if not summary_df.empty:
+            st.write(f"- YouTube columns: {list(summary_df.columns)[:5]}...")
+            if "channel" in summary_df.columns:
+                st.write(f"- YouTube channels: {summary_df['channel'].dropna().unique()[:3]}")
+        if not reddit_summary_df.empty:
+            st.write(f"- Reddit columns: {list(reddit_summary_df.columns)[:5]}...")
+            if "artist" in reddit_summary_df.columns:
+                st.write(f"- Reddit artists: {reddit_summary_df['artist'].dropna().unique()[:3]}")
 
     if summary_df.empty and reddit_summary_df.empty:
         st.error("❌ No processed data found!")
@@ -910,25 +920,31 @@ def main() -> None:
     if not summary_df.empty:
         if "channel" in summary_df.columns:
             yt_channels = summary_df["channel"].dropna().unique().tolist()
+        elif "artist" in summary_df.columns:
+            yt_channels = summary_df["artist"].dropna().unique().tolist()
     
     reddit_artists = []
     if not reddit_summary_df.empty:
         if "artist" in reddit_summary_df.columns:
             reddit_artists = reddit_summary_df["artist"].dropna().unique().tolist()
+        elif "subreddit" in reddit_summary_df.columns:
+            reddit_artists = reddit_summary_df["subreddit"].dropna().unique().tolist()
     
     all_artists = sorted(set(yt_channels) | set(reddit_artists))
+    
+    # Debug: Show what we found
+    with st.expander("🔍 Debug Info", expanded=False):
+        st.write(f"**Artists found:** {len(all_artists)}")
+        if all_artists:
+            st.write(f"First 5: {all_artists[:5]}")
+    
     if not all_artists:
-        st.warning("⚠️ No artist identifiers found in the datasets.")
-        st.info("Debug: Checking artist/channel columns...")
-        with st.expander("Debug Artist Info"):
-            if not summary_df.empty:
-                st.write(f"YouTube columns: {list(summary_df.columns)}")
-                if "channel" in summary_df.columns:
-                    st.write(f"YouTube channels: {summary_df['channel'].dropna().unique()}")
-            if not reddit_summary_df.empty:
-                st.write(f"Reddit columns: {list(reddit_summary_df.columns)}")
-                if "artist" in reddit_summary_df.columns:
-                    st.write(f"Reddit artists: {reddit_summary_df['artist'].dropna().unique()}")
+        st.error("❌ No artist/channel identifiers found!")
+        st.info("Available columns:")
+        if not summary_df.empty:
+            st.write(f"YouTube: {list(summary_df.columns)}")
+        if not reddit_summary_df.empty:
+            st.write(f"Reddit: {list(reddit_summary_df.columns)}")
         st.stop()
 
     st.sidebar.header("Filters")
